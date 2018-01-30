@@ -4,6 +4,12 @@ var isGameOver;
 var playerImage;
 var enemyImage;
 var backgroundImage;
+var score = 0;
+var initialEnemySpeed = 3.5;
+var enemySpeed = initialEnemySpeed;
+var initialPlayerSpeed = 5;
+var playerSpeed = initialPlayerSpeed;
+var speedMultiplier = 0;
 
 function preload(){
   playerImage = loadImage("https://surrogate.hackedu.us/i.imgur.com/N5uCbDu.png");
@@ -25,32 +31,47 @@ function draw() {
     } else {
         if (enemy.overlap(player)) {
             isGameOver = true;
+        }
+        
+        if (enemy.overlap(player)) {
+            gameOver();
+        }
+        
+        background(0, 0, 100);
+        
+        if (keyDown(RIGHT_ARROW) && player.position.x < (width-25)) {
+            player.position.x = player.position.x + playerSpeed;
+        }
+        
+        if (keyDown(LEFT_ARROW) && player.position.x > 25) {
+        player.position.x = player.position.x - playerSpeed;
+        }
+        
+        enemy.position.y = enemy.position.y + enemySpeed;
+       
+        if (enemy.position.y > height) {
+            score++;
+            enemySpeed+=.1;
+            setPlayerSpeed();
+            enemy.position.y = 0;
+            enemy.position.x = random(5, width-5);
+        }
+      
+        drawSprites();
+        displayScore()
+        
     }
-    
-    if (enemy.overlap(player)) {
-        gameOver();
-    }
-    
-    background(0, 0, 100);
-    
-    if (keyDown(RIGHT_ARROW) && player.position.x < (width-25)) {
-        player.position.x = player.position.x + 5;
-    }
-    
-    if (keyDown(LEFT_ARROW) && player.position.x > 25) {
-    player.position.x = player.position.x - 5;
-    }
-    
-    enemy.position.y = enemy.position.y + 5;
-   
-    if (enemy.position.y > height) {
-        enemy.position.y = 0;
-        enemy.position.x = random(5, width-5);
-    }
-    
-    drawSprites();
-  }
 }
+
+function setPlayerSpeed(){
+    speedMultiplier++;
+    playerSpeed*=Math.sqrt(speedMultiplier);
+}
+
+function displayScore() {
+    document.getElementById("score").innerHTML = score;
+}
+
   
 function gameOver() {
   background(0);
@@ -67,5 +88,8 @@ function mouseClicked() {
         player.position.y = height-(playerImage.height/2);
         enemy.position.x = width/2;
         enemy.position.y = 0;
+        score=0;
+        enemySpeed=initialEnemySpeed;
+        playerSpeed=initialPlayerSpeed
     }
 }
